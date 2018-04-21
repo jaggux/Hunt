@@ -7,16 +7,42 @@
 
     </script>
     <style type="text/css">
-
+      body{
+        background-color: #a89b8f;
+      }
+      form{
+        margin-top: 25vh;
+        text-align: center;
+      }
+      .fields{
+        width:25%;
+        font-size: 24px;
+        margin-bottom: 1%;
+        background-color: rgba(196, 195, 194,0.3);
+        border-style: hidden;
+        border-radius: 5px;
+      }
+      #login-form-title{
+        color: white;
+      }
+      #login-btn{
+        width: 25%;
+        font-size: 24px;
+        font-weight: bold;
+        background-color: rgba(237, 214, 85,0.5);
+        color: white;
+        border-style: hidden;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
     <div id="log-in-block">
       <div id="error"></div>
       <form action = '/log-in' method = 'POST'>
-        <label id = "login-form-title">Login</label><br/>
-        <input id = "email-field" name = "email" type = "email" placeholder="Email"></input><br/>
-        <input id = "password-field" name = "password" type = "password" placeholder= "Password"></input><br/>
+        <h1 id = "login-form-title">Welcome</h1><br/>
+        <input id = "email-field" name = "email" type = "email" placeholder="Email" class = "fields"></input><br/>
+        <input id = "password-field" name = "password" type = "password" placeholder= "Password" class = "fields"></input><br/>
         <input id = "login-btn" type = "submit" value = "Login"></input>
       </form>
     </div>
