@@ -11,7 +11,7 @@
         background-color: #a89b8f;
       }
       form{
-        margin-top: 25vh;
+        margin-top: 2%;
         text-align: center;
       }
       .fields{
@@ -34,13 +34,21 @@
         border-style: hidden;
         border-radius: 5px;
       }
+      #error-block{
+        background-color: rgba(244, 95, 66,0.5);
+        text-align: center;
+        height:8vh;
+        color: white;
+        padding: 8vh;
+      }
+
     </style>
   </head>
   <body>
     <div id="log-in-block">
-      <div id="error"></div>
+      <div id='error-block'><span id = 'error'></span></div>
       <form action = '/log-in' method = 'POST'>
-        <h1 id = "login-form-title">Welcome</h1><br/>
+        <h1 id = "login-form-title">Welcome To Hunt</h1><br/>
         <input id = "email-field" name = "email" type = "email" placeholder="Email" class = "fields"></input><br/>
         <input id = "password-field" name = "password" type = "password" placeholder= "Password" class = "fields"></input><br/>
         <input id = "login-btn" type = "submit" value = "Login"></input>

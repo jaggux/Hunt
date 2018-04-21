@@ -30,8 +30,53 @@ mongoClient.connect(url,function(err,client){
 var PORT = process.PORT || 3000;
 var users = [{email:"karansachdev886@gmail.com",password:"password"}];
 
+
+function serveDynamicPage(path,valObj){
+  var oldHTML = fs.readFileSync(path).toString();
+  for(regex in valObj){
+    var regexBuilder = new RegExp(regex);
+    oldHTML = oldHTML.replace(regexBuilder,valObj[regex]);
+  }
+  return oldHTML;
+}
+
 app.get('/',function(req,res,next){
-  res.send(fs.readFileSync('./resources/login.html').toString());
+  var error_message = req.flash('error');
+  if(error_message){
+    res.send(serveDynamicPage('./resources/login.html',{
+      "<div id='error-block'><span id = 'error'>[.]*</span></div>": "<div id='error-block'><span id = 'error'>"+error_message+"</span></div>"
+    }));
+  }else{
+    res.send(fs.readFileSync('./resources/login.html').toString());
+  }
+});
+
+app.post('/log-in',function(req,res,next){
+  if(users){
+    console.log(req.body.email);
+    users.find({email:req.body.email}).toArray(function(err,array){
+      if(err) throw err;
+      if(array[0]){
+        //authenticate password
+        bcrypt.compare(req.body.password,array[0].password,function(err,resp){
+          if(err) throw err;
+          if(resp){
+            //matched
+            req.session.user = array[0];
+            res.redirect('/dashboard');
+          }else{
+            //incorrect password
+            req.flash('error','! your password is incorrect');
+            res.redirect('/');
+          }
+        });
+      }else{
+        //username does not exist
+        req.flash('error','! this email does not exist in our system');
+        res.redirect('/');
+      }
+    });
+  }
 });
 
 app.listen(PORT);
