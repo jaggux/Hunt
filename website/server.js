@@ -33,15 +33,6 @@ var users = [{email:"karansachdev886@gmail.com",password:"password"}];
 app.get('/',function(req,res,next){
   res.send(fs.readFileSync('./resources/login.html').toString());
 });
-app.get('/hash/:pass',function(req,res,next){
-  var password = req.params.pass;
-  var salt = bcrypt.genSaltSync(10);
-  bcrypt.hash(password,salt,function(err,hash){
-    if(err) throw err;
-    console.log(hash);
-    res.end();
-  });
-  res.end();
-});
+
 app.listen(PORT);
 console.log("listening on port " + PORT);
