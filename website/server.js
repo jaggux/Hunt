@@ -60,9 +60,11 @@ app.post('/log-in',function(req,res,next){
         //authenticate password
         bcrypt.compare(req.body.password,array[0].password,function(err,resp){
           if(err) throw err;
-          if(resp){
+          console.log(resp);
+          if(resp == true){
             //matched
             req.session.user = array[0];
+            req.flash('username',array[0].username);
             res.redirect('/dashboard');
           }else{
             //incorrect password
@@ -76,6 +78,30 @@ app.post('/log-in',function(req,res,next){
         res.redirect('/');
       }
     });
+  }
+});
+
+/*app.get('/hash/:uname/:password',function(req,res,next){
+  var username = req.params.uname;
+  var password = req.params.password;
+
+  bcrypt.hash(password,bcrypt.genSaltSync(10),function(error,hash){
+    if(error) throw error;
+    if(users){
+      users.insert({username:username,password:hash,email:"karansachdev886@gmail.com",admin:true});
+      res.end("succesfully created admin");
+    }
+  });
+
+});*/
+
+
+
+app.get('/dashboard',function(req,res,next){
+  if(req.session.user){
+    res.end('ok');
+  }else{
+    res.end('login again');
   }
 });
 
