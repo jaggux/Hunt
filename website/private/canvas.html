@@ -2,11 +2,10 @@
 <html>
   <head>
     <title>Hunt Canvas</title>
-    <script src = "./resources/jquery-3.3.1.min.js"></script>
+    <script src = "./jquery-3.3.1.min.js"></script>
     <script>
       $(document).ready(function(){
-        $('#side-bar-menu').load("./resources/sidebar.html");
-        $('#add-clue-container button').click(drawClue);
+        $('#side-bar-menu').load("./sidebar.html");
       });
       function drawClue(){
         var canvas = document.getElementById("canvas");
@@ -22,7 +21,14 @@
         display: inline-block;
       }
       #title{
-        color: #43608e;
+        background-color: #724403;
+        color: white;
+        padding: 1%;
+        width: 78.5vw;
+        font-family: baby-love;
+        border-style: solid;
+        border-color: black;
+        border-width: thin;
       }
       #page-content-container{
         position: absolute;
@@ -45,7 +51,19 @@
         font-size: 15px;
         margin-right: 4%;
         margin-bottom: 1%;
-        border-radius: 2px;
+        border-radius: 5px;
+      }
+      #side-section{
+        border-style: dashed;
+        width: 15vw;
+        height:48vh;
+        margin-top: 1%;
+      }
+      #side-section-title{
+        font-weight: bold;
+        font-family: digital-letters;
+        font-size: 25px;
+        color:#193666;
       }
 
     </style>
@@ -54,16 +72,17 @@
     <div id = "side-bar-menu" class = "horizontal-container"></div>
     <div id = "page-content-container" class = "horizontal-container">
       <h1 id = "title">Welcome to the hunt canvas</h1>
-      <span id = "add-clue-container"><button class = "glyphicon">&#x2b;<span>ADD A CLUE</span></button></span>
+      <span id = "add-clue-container"><button class = "glyphicon">&#x2b;<span> ADD A CLUE</span></button></span>
       <canvas id = "canvas" width = "1000" height = "600"></canvas>
-      <h2 id = "active-hunt-title">Active Hunt</h2>
-      <div id = "active-hunt" class = "box-content">
-          Nothing.
-      </div>
       <h2 id = "hunt-history-title">History</h2>
       <div id = "hunt-history" class = "box-content">
         No History.
       </div>
+    </div>
+    <div id = "side-section">
+      <span id = "side-section-title">Active Hunt</span>
+      <hr/>
+      <div id = "side-section-content">no hunts are active.</div>
     </div>
   </body>
 </html>
