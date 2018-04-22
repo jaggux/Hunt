@@ -5,6 +5,8 @@ var flash = require("express-flash");
 var bcrypt = require("bcrypt");
 var mongoClient = require('mongodb').MongoClient;
 var users;
+var activeUsers = new Array();
+var path = require("path");
 var DATABASE_NAME = "development_db";
 var USERS_COLLECTION = "users";
 
@@ -17,7 +19,7 @@ app.use(session({
   secret: "the_legend_begins",
   maxAge: 1000 * 60 * 30
 }));
-app.use('/',express.static('./resources'));
+
 //connect to mongo
 var url = "mongodb://ksach:ilmfvm26@ds247759.mlab.com:47759/development_db";
 mongoClient.connect(url,function(err,client){
@@ -28,8 +30,6 @@ mongoClient.connect(url,function(err,client){
 
 
 var PORT = process.PORT || 3000;
-var users = [{email:"karansachdev886@gmail.com",password:"password"}];
-
 
 function serveDynamicPage(path,valObj){
   var oldHTML = fs.readFileSync(path).toString();
@@ -39,6 +39,15 @@ function serveDynamicPage(path,valObj){
   }
   return oldHTML;
 }
+
+app.get("/resources/:filename",function(req,res,next){
+  var filename = req.params.filename;
+  var url = "./resources/"+filename;
+  fs.readFile(url,function(err,content){
+    if(err) res.end("404 error cannot get " + filename);
+    res.send(content.toString());
+  });
+});
 
 app.get('/',function(req,res,next){
   var error_message = req.flash('error');
@@ -64,7 +73,7 @@ app.post('/log-in',function(req,res,next){
           if(resp == true){
             //matched
             req.session.user = array[0];
-            req.flash('username',array[0].username);
+            activeUsers.push(array[0]);
             res.redirect('/dashboard');
           }else{
             //incorrect password
@@ -99,10 +108,22 @@ app.post('/log-in',function(req,res,next){
 
 app.get('/dashboard',function(req,res,next){
   if(req.session.user){
-    res.end('ok');
+    var username = req.session.user.username;
+    res.send(serveDynamicPage("./private/dashboard.html",{
+      "<h1 id = 'username-container'>[.]*</h1>":"<h1 id = 'username-container'>welcome to the hunt, "+ username +"</h1>"
+    }));
   }else{
-    res.end('login again');
+    req.flash('error','! your session has expired, please login again');
+    res.redirect('/log-in');
   }
+});
+
+app.get("/logout",function(req,res,next){
+  req.session.regenerate(function(err){
+    if(err) throw err;
+    req.flash('error','! you have logged out');
+    res.redirect('/');
+  });
 });
 
 app.listen(PORT);
