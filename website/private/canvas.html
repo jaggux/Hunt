@@ -3,12 +3,22 @@
   <head>
     <title>Hunt Canvas</title>
     <script src = "./jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.rawgit.com/konvajs/konva/2.0.3/konva.min.js"></script>
     <script>
       var clues = new Array();
+      var lastKnownClue;
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
         $('#add-clue-container button').click(drawClue);
+
       });
+
+      function onClueDrag(event){
+        alert("dragging")
+        if(isClueClicked() != -1){
+          alert("dragging a clue");
+        }
+      }
 
       function throwClue(clue){
         clue.context.clearRect(clue.xPos - (clue.radius + 10),clue.yPos - (clue.radius + 10),clue.radius*2.5,clue.radius*2.5);
@@ -32,15 +42,29 @@
         this.radius = 35;
         this.xPos = 500;
         this.yPos = 300;
+        this.clueNumber = function(){
+          if(clues.length == 0 || clues.length == 1){
+            return 1;
+          }else{
+            return clues.length;
+          }
+        }
       }
       function drawClue(){
         var canvas = document.getElementById("canvas");
         var context = canvas.getContext("2d");
+        context.font = "30px Arial";
+        context.lineWidth = 5;
         context.beginPath();
         var clue = new Clue();
         context.arc(clue.xPos,clue.yPos,clue.radius,0,2*Math.PI);
-        context.arc(clue.xPos,clue.yPos,clue.radius + 5,0,2*Math.PI);
+        context.shadowOffsetX = 3;
+        context.shadowOffsetY = 2;
+        context.shadowBlur = 20;
+        context.shadowColor = "black";
         context.stroke();
+        clue.number = clue.clueNumber();
+        context.fillText(clue.number,clue.xPos - 8.5,clue.yPos + 8.5);
         clue.context = context;
         clues.push(clue);
       }
@@ -102,7 +126,7 @@
     <div id = "page-content-container" class = "horizontal-container">
       <h1 id = "title">Welcome to the hunt canvas</h1>
       <span id = "add-clue-container"><button class = "glyphicon">&#x2b;<span> ADD A CLUE</span></button></span>
-      <canvas id = "canvas" width = "1000" height = "600"></canvas>
+      <canvas id = "canvas" width = "1000" height = "600" ondrag = "onClueDrag(event)"></canvas>
       <h2 id = "hunt-history-title">History</h2>
       <div id = "hunt-history" class = "box-content">
         No History.
