@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <style>
+
+    @font-face{
+      font-family: 'digital-letters';
+      src:url("./fonts/Digitalt.ttf") format("opentype");
+    }
+
+    @font-face{
+      font-family: 'baby-love';
+      src:url("./fonts/Babylove.ttf") format("opentype");
+    }
+
+      #side-bar{
+        width: 15vw;
+        height: 60vh;
+        background-color: rgba(102, 55, 6, 0.7);
+        box-shadow: 2px 2px 1px grey;
+        padding-top: 1%;
+      }
+      #side-bar-title{
+        color: white;
+        font-weight: bold;
+        font-family: digital-letters;
+        font-size: 25px;
+        margin-left: 5%;
+      }
+      #side-bar-content{
+        list-style-type: none;
+        color: white;
+        font-weight: bold;
+        font-family: baby-love;
+        letter-spacing: 1px;
+        font-size: 20px;
+        border-style: dashed;
+      }
+       .glyphicon{
+        color: white;
+        padding-right: 5%;
+        font-size: 20px;
+        border-style:ridge;
+        border-radius: 1px;
+        border-width:thin;
+        background-color: rgba(102, 55, 6, 0.9);
+        border-color: rgb(102, 55, 6);
+        width: 15vw;
+        padding: 1%;
+      }
+      .glyphicon span{
+        font-family: baby-love;
+      }
+
+      .glyphicon:hover{
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id = "side-bar">
+      <a id = "side-bar-title">My Dashboard</a>
+      <a class = 'glyphicon'>&#xe021; <span>HOME</span></a>
+      <a class = 'glyphicon'>&#xe008; <span>PROFILE</span></a>
+      <hr/>
+      <a class = 'glyphicon'>&#xe006; <span>STATS</span></a>
+      <a class = 'glyphicon'>&#xe087; <span>HUNT</span></a>
+      <hr/>
+      <a class = 'glyphicon'>&#xf8ff; <span>CONTRIBUTE</span></a>
+      <a href = "/logout" class = 'glyphicon'>&#xe163; <span>LOGOUT</span></a>
+    </div>
+  </body>
+</html>

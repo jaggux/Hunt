@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <script src = "./resources/jquery-3.3.1.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $('#side-bar-menu').load("./resources/sidebar.html");
+      });
+    </script>
+    <style>
+      .horizontal-container{
+        display: inline-block;
+      }
+      .header-containers{
+        width: 25vw;
+        height:25vh;
+        color:#385077;
+        border-style: dashed;
+        display: inline-block;
+        position: absolute;
+        font-weight: bold;
+        text-align: center;
+      }
+      .header-containers:hover{
+        width:27vw;
+        height:27vh;
+        cursor: pointer;
+      }
+      #page-content-container{
+        position: absolute;
+        margin-left: 2vw;
+      }
+      #score-container{
+        font-size: 50px;
+      }
+      #score{
+        color:black;
+      }
+      #active-hunts-container{
+        left: 26vw;
+        font-size: 35px;
+      }
+      #active-hunts{
+        color: #b0b7c1;
+
+      }
+      #rank-container{
+        left: 52vw;
+        font-size: 50px;
+      }
+      #rank{
+        color:black;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id = "side-bar-menu" class = "horizontal-container"></div>
+    <div id = "page-content-container" class = "horizontal-container">
+      <h1 id = 'username-container'></h1>
+      <div id = "score-container" class = "header-containers">SCORE<br/><span id = "score">0pts</span></div>
+      <div id = "active-hunts-container" class = "header-containers">ACTIVE HUNT(S)<br/><span id = "active-hunts">NONE</span></div>
+      <div id = "rank-container" class = "header-containers">RANK<br/><span id = "rank">1</span></div>
+    </div>
+  </body>
+</html>

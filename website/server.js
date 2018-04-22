@@ -45,7 +45,11 @@ app.get("/resources/:filename",function(req,res,next){
   var url = "./resources/"+filename;
   fs.readFile(url,function(err,content){
     if(err) res.end("404 error cannot get " + filename);
-    res.send(content.toString());
+    if(content){
+      res.send(content.toString());
+    }else{
+      res.end("404 error cannot get " + filename);
+    }
   });
 });
 
