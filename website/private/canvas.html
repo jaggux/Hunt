@@ -4,16 +4,45 @@
     <title>Hunt Canvas</title>
     <script src = "./jquery-3.3.1.min.js"></script>
     <script>
+      var clues = new Array();
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
+        $('#add-clue-container button').click(drawClue);
       });
+
+      function throwClue(clue){
+        clue.context.clearRect(clue.xPos - (clue.radius + 10),clue.yPos - (clue.radius + 10),clue.radius*2.5,clue.radius*2.5);
+      }
+
+      function isClueClicked(){
+        var bounds = document.getElementById("canvas").getBoundingClientRect();
+        var x = e.clientX - bounds.left;
+        var y = e.clientY - bounds.top;
+
+        for(var i=0;i<clues.length;i++){
+          if(x + clues[i].radius >= clues[i].xPos && x - clues[i].radius <= clues[i].xPos &&
+            y + clues[i].radius >= clues[i].yPos && y - clues[i].radius <= clues[i].yPos){
+              return i;
+          }
+        }
+        return -1;
+      }
+
+      function Clue(){
+        this.radius = 35;
+        this.xPos = 500;
+        this.yPos = 300;
+      }
       function drawClue(){
         var canvas = document.getElementById("canvas");
         var context = canvas.getContext("2d");
         context.beginPath();
-        context.arc(500,300,35,0,2*Math.PI);
+        var clue = new Clue();
+        context.arc(clue.xPos,clue.yPos,clue.radius,0,2*Math.PI);
+        context.arc(clue.xPos,clue.yPos,clue.radius + 5,0,2*Math.PI);
         context.stroke();
-        context.lineWidth = 10;
+        clue.context = context;
+        clues.push(clue);
       }
     </script>
     <style>
