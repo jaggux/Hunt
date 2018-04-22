@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hunt Canvas</title>
+    <script src = "./resources/jquery-3.3.1.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $('#side-bar-menu').load("./resources/sidebar.html");
+        $('#add-clue-container button').click(drawClue);
+      });
+      function drawClue(){
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        context.beginPath();
+        context.arc(500,300,35,0,2*Math.PI);
+        context.stroke();
+        context.lineWidth = 10;
+      }
+    </script>
+    <style>
+      .horizontal-container{
+        display: inline-block;
+      }
+      #title{
+        color: #43608e;
+      }
+      #page-content-container{
+        position: absolute;
+        margin-left: 2vw;
+      }
+      #canvas{
+        border-style: solid;
+      }
+      .box-content{
+        border: dashed;
+        width: 80vw;
+        color: #bec4ce;
+      }
+
+      #add-clue-container button{
+        float:right;
+        border:none;
+        color: white;
+        background-color: green;
+        font-size: 15px;
+        margin-right: 4%;
+        margin-bottom: 1%;
+        border-radius: 2px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id = "side-bar-menu" class = "horizontal-container"></div>
+    <div id = "page-content-container" class = "horizontal-container">
+      <h1 id = "title">Welcome to the hunt canvas</h1>
+      <span id = "add-clue-container"><button class = "glyphicon">&#x2b;<span>ADD A CLUE</span></button></span>
+      <canvas id = "canvas" width = "1000" height = "600"></canvas>
+      <h2 id = "active-hunt-title">Active Hunt</h2>
+      <div id = "active-hunt" class = "box-content">
+          Nothing.
+      </div>
+      <h2 id = "hunt-history-title">History</h2>
+      <div id = "hunt-history" class = "box-content">
+        No History.
+      </div>
+    </div>
+  </body>
+</html>
