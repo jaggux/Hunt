@@ -6,6 +6,7 @@
     <script>
       $(document).ready(function(){
         $('#side-bar-menu').load("./resources/sidebar.html");
+
       });
     </script>
     <style>
@@ -21,6 +22,7 @@
         position: absolute;
         font-weight: bold;
         text-align: center;
+        font-size: 50px;
       }
       .header-containers:hover{
         width:27vw;
@@ -31,23 +33,18 @@
         position: absolute;
         margin-left: 2vw;
       }
-      #score-container{
-        font-size: 50px;
-      }
       #score{
         color:black;
       }
-      #active-hunts-container{
+      #hunts-container{
         left: 26vw;
-        font-size: 35px;
       }
-      #active-hunts{
-        color: #b0b7c1;
+      #hunts{
+        color: black;
 
       }
       #rank-container{
         left: 52vw;
-        font-size: 50px;
       }
       #rank{
         color:black;
@@ -59,8 +56,8 @@
     <div id = "side-bar-menu" class = "horizontal-container"></div>
     <div id = "page-content-container" class = "horizontal-container">
       <h1 id = 'username-container'></h1>
-      <div id = "score-container" class = "header-containers">SCORE<br/><span id = "score">0pts</span></div>
-      <div id = "active-hunts-container" class = "header-containers">ACTIVE HUNT(S)<br/><span id = "active-hunts">NONE</span></div>
+      <div id = "score-container" class = "header-containers">SCORE<br/><span id = 'score'></span></div>
+      <div id = "hunts-container" class = "header-containers">HUNTS<br/><span id = 'hunts'></span></div>
       <div id = "rank-container" class = "header-containers">RANK<br/><span id = "rank">1</span></div>
     </div>
   </body>

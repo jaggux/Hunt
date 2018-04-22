@@ -113,8 +113,13 @@ app.post('/log-in',function(req,res,next){
 app.get('/dashboard',function(req,res,next){
   if(req.session.user){
     var username = req.session.user.username;
+    var totalHunts = req.session.user.hunts;
+    var score = req.session.user.score;
     res.send(serveDynamicPage("./private/dashboard.html",{
-      "<h1 id = 'username-container'>[.]*</h1>":"<h1 id = 'username-container'>welcome to the hunt, "+ username +"</h1>"
+      "<h1 id = 'username-container'>[.]*</h1>":"<h1 id = 'username-container'>welcome to the hunt, "+ username +"</h1>",
+      "<span id = 'hunts'>[.]*</span>":"<span id = 'hunts'>"+totalHunts+"</span>",
+      "<span id = 'score'>[.]*</span>":"<span id = 'score'>"+score+"pts</span>"
+
     }));
   }else{
     req.flash('error','! your session has expired, please login again');
@@ -128,6 +133,15 @@ app.get("/logout",function(req,res,next){
     req.flash('error','! you have logged out');
     res.redirect('/');
   });
+});
+
+app.get("/canvas",function(req,res,next){
+  if(req.session.user){
+    res.send(fs.readFileSync("./private/canvas.html").toString());
+  }else{
+    req.flash('error','! your session has expired, please login again');
+    res.redirect('/log-in');
+  }
 });
 
 app.listen(PORT);
