@@ -8,7 +8,7 @@
       var clues = new Array();
       var lastKnownClue;
       var layer = new Konva.Layer();
-      var WIDTH = window.innerWidth * 0.79;
+      var WIDTH = window.innerWidth * 0.80;
       var HEIGHT = window.innerHeight * 0.79;
 
       $(document).ready(function(){
@@ -21,12 +21,12 @@
         $("#add-clue-container button").click(function(){
 
           var clue = new Clue(stage.getWidth()/2,stage.getHeight()/2,35);
-          drawCircle(clue);
+          addClue(clue);
           stage.add(layer);
         });
       });
 
-      function drawCircle(clue){
+      function addClue(clue){
         var group = new Konva.Group({
             draggable: true,
             dragBoundFunc: function(pos){
@@ -69,8 +69,8 @@
         });
         group.add(text);
         group.add(circle);
-        layer.add(group);
         clues.push(group);
+        layer.add(group);
       }
 
       function Clue(x,y,radius){
