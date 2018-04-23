@@ -7,66 +7,79 @@
     <script>
       var clues = new Array();
       var lastKnownClue;
+      var layer = new Konva.Layer();
+      var WIDTH = window.innerWidth * 0.79;
+      var HEIGHT = window.innerHeight * 0.79;
+
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
-        $('#add-clue-container button').click(drawClue);
+        var stage = new Konva.Stage({
+          container: "canvas",
+          width: WIDTH,
+          height: HEIGHT
+        });
+        $("#add-clue-container button").click(function(){
 
+          var clue = new Clue(stage.getWidth()/2,stage.getHeight()/2,35);
+          drawCircle(clue);
+          stage.add(layer);
+        });
       });
 
-      function onClueDrag(event){
-        alert("dragging")
-        if(isClueClicked() != -1){
-          alert("dragging a clue");
-        }
+      function drawCircle(clue){
+        var group = new Konva.Group({
+            draggable: true,
+            dragBoundFunc: function(pos){
+              var xpos = pos.x;
+              var ypos = pos.y;
+
+              if(xpos < -469){
+                xpos = -469;
+              }else if(xpos > 467){
+                xpos = 467;
+              }
+
+              if(ypos < -232){
+                ypos = -232;
+              }else if(ypos > 232){
+                ypos = 232;
+              }
+
+              return {
+                x: xpos,
+                y: ypos
+              }
+
+            }
+        });
+        var circle = new Konva.Circle({
+          x: clue.posX,
+          y: clue.posY,
+          radius: clue.radius,
+          stroke: 'black',
+          strokeWidth: 4
+        });
+        var text = new Konva.Text({
+          x:clue.posX - 10,
+          y:clue.posY - 15,
+          align: "center",
+          text: clue.clueNumber(),
+          fontSize: 35,
+
+        });
+        group.add(text);
+        group.add(circle);
+        layer.add(group);
+        clues.push(group);
       }
 
-      function throwClue(clue){
-        clue.context.clearRect(clue.xPos - (clue.radius + 10),clue.yPos - (clue.radius + 10),clue.radius*2.5,clue.radius*2.5);
-      }
-
-      function isClueClicked(){
-        var bounds = document.getElementById("canvas").getBoundingClientRect();
-        var x = e.clientX - bounds.left;
-        var y = e.clientY - bounds.top;
-
-        for(var i=0;i<clues.length;i++){
-          if(x + clues[i].radius >= clues[i].xPos && x - clues[i].radius <= clues[i].xPos &&
-            y + clues[i].radius >= clues[i].yPos && y - clues[i].radius <= clues[i].yPos){
-              return i;
-          }
-        }
-        return -1;
-      }
-
-      function Clue(){
-        this.radius = 35;
-        this.xPos = 500;
-        this.yPos = 300;
+      function Clue(x,y,radius){
+        this.posX = x;
+        this.posY = y;
+        this.radius = radius;
         this.clueNumber = function(){
-          if(clues.length == 0 || clues.length == 1){
-            return 1;
-          }else{
-            return clues.length;
-          }
+          return clues.length + 1;
         }
-      }
-      function drawClue(){
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext("2d");
-        context.font = "30px Arial";
-        context.lineWidth = 5;
-        context.beginPath();
-        var clue = new Clue();
-        context.arc(clue.xPos,clue.yPos,clue.radius,0,2*Math.PI);
-        context.shadowOffsetX = 3;
-        context.shadowOffsetY = 2;
-        context.shadowBlur = 20;
-        context.shadowColor = "black";
-        context.stroke();
-        clue.number = clue.clueNumber();
-        context.fillText(clue.number,clue.xPos - 8.5,clue.yPos + 8.5);
-        clue.context = context;
-        clues.push(clue);
       }
     </script>
     <style>
@@ -77,7 +90,7 @@
         background-color: #724403;
         color: white;
         padding: 1%;
-        width: 78.5vw;
+        width: 80vw;
         font-family: baby-love;
         border-style: solid;
         border-color: black;
@@ -97,12 +110,12 @@
       }
 
       #add-clue-container button{
+        position: relative;
         float:right;
         border:none;
         color: white;
         background-color: green;
         font-size: 15px;
-        margin-right: 4%;
         margin-bottom: 1%;
         border-radius: 5px;
       }
@@ -118,6 +131,11 @@
         font-size: 25px;
         color:#193666;
       }
+      #canvas{
+        width:80vw;
+        height:80vh;
+        margin-top:2%;
+      }
 
     </style>
   </head>
@@ -126,7 +144,8 @@
     <div id = "page-content-container" class = "horizontal-container">
       <h1 id = "title">Welcome to the hunt canvas</h1>
       <span id = "add-clue-container"><button class = "glyphicon">&#x2b;<span> ADD A CLUE</span></button></span>
-      <canvas id = "canvas" width = "1000" height = "600" ondrag = "onClueDrag(event)"></canvas>
+      <br/>
+      <div id = "canvas"></div>
       <h2 id = "hunt-history-title">History</h2>
       <div id = "hunt-history" class = "box-content">
         No History.
