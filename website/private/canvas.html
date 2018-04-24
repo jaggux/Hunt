@@ -143,8 +143,8 @@
 
               if(ypos < -208){
                 ypos = -208;
-              }else if(ypos > 187){
-                ypos = 187;
+              }else if(ypos > 195){
+                ypos = 195;
               }
 
               return {
@@ -161,22 +161,19 @@
           height:25,
           fill:'#365382'
         });
-        var clue_circle_number = new Konva.Text({
-          x:centerX + 177,
-          y:centerY - 53,
-          text: clue.number + '.',
-          fill: "white",
-          fontStyle:"bold",
-        });
         var clue_title = new Konva.Text({
           x:centerX + 3,
           y:centerY - 55,
-          text:clue.title,
+          text:clue.number + ". " + clue.title,
           fill:"white",
           fontStyle:"bold"
         });
-        var clue_body_container = new Konva.Line({
-          points:[centerX+1,centerY - 35,centerX+1,centerY + 80,centerX+199,centerY + 80,centerX+199,centerY-35],
+        var clue_body_container = new Konva.Rect({
+          x:centerX + 0.75,
+          y:centerY - 38,
+          width:198.5,
+          height:110,
+          fill:"white",
           stroke:'black',
           strokeWidth: 1
         });
@@ -188,10 +185,9 @@
           fontStyle:"bold",
           fontSize:8
         });
-        group.add(header_rect);
-        group.add(clue_circle_number);
-        group.add(clue_title);
         group.add(clue_body_container);
+        group.add(header_rect);
+        group.add(clue_title);
         group.add(body_text);
         group.on('dblclick',function(){
 
