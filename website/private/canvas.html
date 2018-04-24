@@ -13,10 +13,13 @@
       var clues = new Array();
       var lastKnownClue;
       var layer = new Konva.Layer();
-      var WIDTH = window.innerWidth * 0.80;
+      var WIDTH = window.innerWidth * 0.795;
       var HEIGHT = window.innerHeight * 0.79;
       var centerX;
       var centerY;
+      var stage;
+      var TEXT_THRESHHOLD = 21;
+      var LINE_THRESHHOLD = 8;
 
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
@@ -31,8 +34,16 @@
           title:"clue-builder",
           modal:true,
           buttons:{
-            "pin-it":function(){
-
+            "pin-to-canvas":function(){
+              var title = $('#clue-title-field').val();
+              var body = $('#clue-body-field').val();
+              var keywords = $('#clue-keywords-field').val();
+              if(title != '' && body != '' && keywords != ''){
+                var clue = new Clue(title,body);
+                clues.push(clue);
+                addClue(clue);
+                $(this).dialog("close");
+              }
             },
             "cancel":function(){
               $(this).dialog("close");
@@ -75,7 +86,7 @@
 
         cy.layout({name:'circle'}).run();*/
 
-        var stage = new Konva.Stage({
+        stage = new Konva.Stage({
           container: "detail-canvas",
           width: WIDTH,
           height: HEIGHT
@@ -83,15 +94,41 @@
         centerX = stage.getWidth()/2;
         centerY = stage.getHeight()/2;
 
-
-
       });
 
       function addClue(clue){
+        //organize body text into lines if necessary
+        var str = '';
+        if(clue.body.length >= TEXT_THRESHHOLD){
+          var numOfLines = Math.ceil(clue.body.length/20);
+          if(numOfLines > LINE_THRESHHOLD){
+            clue.body += '...';
+            numOfLines = LINE_THRESHHOLD;
+          }
+          var startIndex = TEXT_THRESHHOLD * -1;
+          var endIndex = 0;
+          for(var i=0;i<numOfLines;i++){
+            startIndex = startIndex + TEXT_THRESHHOLD;
+            endIndex = endIndex + TEXT_THRESHHOLD;
+
+            if(endIndex >= clue.body.length){
+              endIndex = clue.body.length - 1;
+            }
+            str += clue.body.substr(startIndex,endIndex);
+            if(i != numOfLines - 1){
+              str += '\n';
+            }
+          }
+        }else{
+          str = clue.body;
+        }
+        //restrict title length
+        if(clue.title.length > 18){
+          clue.title = clue.title.substr(0,15) + '...';
+        }
+
         var group = new Konva.Group({
             draggable: true,
-            locx:centerX,
-            locy:centerY,
             dragBoundFunc: function(pos){
               var xpos = pos.x;
               var ypos = pos.y;
@@ -115,21 +152,43 @@
 
             }
         });
-
-        var text = new Konva.Text({
-          x:clue.posX - 10,
-          y:clue.posY - 15,
-          align: "center",
-          text: clue.clueNumber(),
-          fontSize: 35,
-
+        var header_rect = new Konva.Rect({
+          x:centerX,
+          y:centerY - 60,
+          width:110,
+          height:25,
+          fill:'#365382'
         });
-        group.add(text);
-        group.add(circle);
-
-
-        clues.push(group);
+        var clue_title = new Konva.Text({
+          x:centerX + 3,
+          y:centerY - 55,
+          text:clue.title,
+          fill:"white",
+          fontStyle:"bold"
+        });
+        var clue_body_container = new Konva.Rect({
+          x:centerX + 1,
+          y:centerY - 35,
+          width:108,
+          height:100,
+          fill:'white',
+          stroke:'black',
+          strokeWidth: 2
+        });
+        var body_text = new Konva.Text({
+          x:centerX + 3,
+          y:centerY - 28,
+          text:str,
+          fill:'black',
+          fontStyle:"bold",
+          fontSize:8
+        });
+        group.add(header_rect);
+        group.add(clue_title);
+        group.add(clue_body_container);
+        group.add(body_text);
         layer.add(group);
+        stage.add(layer);
       }
 
       function Clue(title,body,number){
@@ -140,7 +199,15 @@
 
       function textAreaCharacterCount(){
         var count = $('#clue-body-field').val().length;
-        $('#dialog-form span').text(count + " character(s)");
+        $('#clue-body-count').text(count + " character(s)");
+      }
+      function keywordCount(){
+        var text = $('#clue-keywords-field').val();
+        var count = text.split(',').length;
+        if(count == 1 && text == ''){
+          count = 0;
+        }
+        $('#clue-keyword-count').text(count + " word(s)");
       }
     </script>
     <style>
@@ -237,8 +304,11 @@
         <form>
           <br/>
           <input class = "clue-input-fields" id = "clue-title-field" name = "clue-title-field" type = "text" placeholder="title..or heading of your clue..."/>
-          <span>0 characters</span><br/>
+          <span id = "clue-body-count">0 characters</span><br/>
           <textarea id = "clue-body-field" name = "clue-body-field" placeholder="compose your clue here..." cols = "30" rows = "8" oninput="textAreaCharacterCount()"></textarea>
+          <span id = "keywords-label">Keyword(s): a comma seperated list of clue solutions</span>
+          <textarea id = "clue-keywords-field" placeholder="keyword(s)..." cols = "30" rows = "3" oninput = "keywordCount()"></textarea>
+          <span id = "clue-keyword-count">0 word(s)</span>
         </form>
       </div>
     </div>
