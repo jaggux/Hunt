@@ -39,7 +39,7 @@
               var body = $('#clue-body-field').val();
               var keywords = $('#clue-keywords-field').val();
               if(title != '' && body != '' && keywords != ''){
-                var clue = new Clue(title,body);
+                var clue = new Clue(title,body,clues.length+1);
                 clues.push(clue);
                 addClue(clue);
                 $(this).dialog("close");
@@ -161,6 +161,13 @@
           height:25,
           fill:'#365382'
         });
+        var clue_circle_number = new Konva.Text({
+          x:centerX + 177,
+          y:centerY - 53,
+          text: clue.number + '.',
+          fill: "white",
+          fontStyle:"bold",
+        });
         var clue_title = new Konva.Text({
           x:centerX + 3,
           y:centerY - 55,
@@ -182,6 +189,7 @@
           fontSize:8
         });
         group.add(header_rect);
+        group.add(clue_circle_number);
         group.add(clue_title);
         group.add(clue_body_container);
         group.add(body_text);
