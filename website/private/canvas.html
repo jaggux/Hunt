@@ -50,6 +50,8 @@
             }
           }
         });
+
+        $('#context-menu').menu();
         $('#control-buttons-container button').click(function(){
           $('#dialog-form').dialog("open");
         });
@@ -166,14 +168,10 @@
           fill:"white",
           fontStyle:"bold"
         });
-        var clue_body_container = new Konva.Rect({
-          x:centerX + 1,
-          y:centerY - 35,
-          width:108,
-          height:100,
-          fill:'white',
+        var clue_body_container = new Konva.Line({
+          points:[centerX+1,centerY - 35,centerX+1,centerY + 65,centerX+109,centerY + 65,centerX+109,centerY-35],
           stroke:'black',
-          strokeWidth: 2
+          strokeWidth: 1
         });
         var body_text = new Konva.Text({
           x:centerX + 3,
@@ -187,6 +185,9 @@
         group.add(clue_title);
         group.add(clue_body_container);
         group.add(body_text);
+        group.on('dblclick',function(){
+
+        });
         layer.add(group);
         stage.add(layer);
       }
@@ -310,6 +311,13 @@
           <textarea id = "clue-keywords-field" placeholder="keyword(s)..." cols = "30" rows = "3" oninput = "keywordCount()"></textarea>
           <span id = "clue-keyword-count">0 word(s)</span>
         </form>
+      </div>
+      <div id = "context-menu">
+        <ul>
+          <li>view</li>
+          <li>edit</li>
+          <li>delete</li>
+        </ul>
       </div>
     </div>
     <div id = "side-section">
