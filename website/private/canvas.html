@@ -2,33 +2,96 @@
 <html>
   <head>
     <title>Hunt Canvas</title>
+    <link href = "http://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel = "stylesheet" type = "text/css"/>
     <script src = "./jquery-3.3.1.min.js"></script>
+    <script src = "./cytoscape.min.js"></script>
     <script src="https://cdn.rawgit.com/konvajs/konva/2.0.3/konva.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+   crossorigin="anonymous"></script>
+
     <script>
       var clues = new Array();
       var lastKnownClue;
       var layer = new Konva.Layer();
       var WIDTH = window.innerWidth * 0.80;
       var HEIGHT = window.innerHeight * 0.79;
+      var centerX;
+      var centerY;
 
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
+
+        $('#dialog-form').dialog({
+          autoOpen:false,
+          position:{
+            me:'center',
+            at:'center',
+            of: window
+          },
+          title:"clue-builder",
+          modal:true,
+          buttons:{
+            "pin-it":function(){
+
+            },
+            "cancel":function(){
+              $(this).dialog("close");
+            }
+          }
+        });
+        $('#control-buttons-container button').click(function(){
+          $('#dialog-form').dialog("open");
+        });
+        /*var cy = cytoscape({
+          container: $('#canvas'),
+          elements:[
+            {data:{id:'a'}},
+            {data:{id:'b'}},
+            {
+              data: {
+                id: 'ab',
+                source: 'a',
+                target: 'b'
+              }
+            }
+          ],
+          style:[{
+            selector:'node',
+            style:{
+              shape: 'circle',
+              'background-color':'white',
+              'border-color': 'blue',
+              'border-width':3,
+              'width':50,
+              'height':50,
+              label: 'data(id)',
+              'text-margin-y':'20%'
+            }
+          }],
+          layout:{
+            name: 'grid'
+          }
+        });
+
+        cy.layout({name:'circle'}).run();*/
+
         var stage = new Konva.Stage({
-          container: "canvas",
+          container: "detail-canvas",
           width: WIDTH,
           height: HEIGHT
         });
-        $("#add-clue-container button").click(function(){
+        centerX = stage.getWidth()/2;
+        centerY = stage.getHeight()/2;
 
-          var clue = new Clue(stage.getWidth()/2,stage.getHeight()/2,35);
-          addClue(clue);
-          stage.add(layer);
-        });
+
+
       });
 
       function addClue(clue){
         var group = new Konva.Group({
             draggable: true,
+            locx:centerX,
+            locy:centerY,
             dragBoundFunc: function(pos){
               var xpos = pos.x;
               var ypos = pos.y;
@@ -52,13 +115,7 @@
 
             }
         });
-        var circle = new Konva.Circle({
-          x: clue.posX,
-          y: clue.posY,
-          radius: clue.radius,
-          stroke: 'black',
-          strokeWidth: 4
-        });
+
         var text = new Konva.Text({
           x:clue.posX - 10,
           y:clue.posY - 15,
@@ -69,17 +126,21 @@
         });
         group.add(text);
         group.add(circle);
+
+
         clues.push(group);
         layer.add(group);
       }
 
-      function Clue(x,y,radius){
-        this.posX = x;
-        this.posY = y;
-        this.radius = radius;
-        this.clueNumber = function(){
-          return clues.length + 1;
-        }
+      function Clue(title,body,number){
+        this.title = title;
+        this.body = body;
+        this.number = number;
+      }
+
+      function textAreaCharacterCount(){
+        var count = $('#clue-body-field').val().length;
+        $('#dialog-form span').text(count + " character(s)");
       }
     </script>
     <style>
@@ -100,16 +161,25 @@
         position: absolute;
         margin-left: 2vw;
       }
-      #canvas{
+      #detail-canvas{
         border-style: solid;
+        width:80vw;
+        height:80vh;
+        margin-top:2%;
       }
       .box-content{
         border: dashed;
         width: 80vw;
         color: #bec4ce;
       }
+      .view-control-button{
+        color:white;
+        background-color: #040930;
+        border-radius:10px;
+        font-family: digital-letters;
+      }
 
-      #add-clue-container button{
+      #control-buttons-container button{
         position: relative;
         float:right;
         border:none;
@@ -118,6 +188,7 @@
         font-size: 15px;
         margin-bottom: 1%;
         border-radius: 5px;
+        font-family: digital-letters;
       }
       #side-section{
         border-style: dashed;
@@ -131,11 +202,19 @@
         font-size: 25px;
         color:#193666;
       }
-      #canvas{
-        width:80vw;
-        height:80vh;
-        margin-top:2%;
+
+      #dialog-form .clue-input-fields{
+        position:relative;
+        width:100%;
       }
+      #dialog-form textarea{
+        resize: none;
+        text-align: left;
+      }
+      #dialog-form span{
+        font-size: 10px;
+      }
+
 
     </style>
   </head>
@@ -143,12 +222,24 @@
     <div id = "side-bar-menu" class = "horizontal-container"></div>
     <div id = "page-content-container" class = "horizontal-container">
       <h1 id = "title">Welcome to the hunt canvas</h1>
-      <span id = "add-clue-container"><button class = "glyphicon">&#x2b;<span> ADD A CLUE</span></button></span>
+      <button class = "view-control-button">Detail-View</button>
+      <button class = "view-control-button">Graph-View</button>
+      <span id = "control-buttons-container">
+        <button class = "glyphicon">&#x2b;<span> ADD A CLUE</span></button>
+      </span>
       <br/>
-      <div id = "canvas"></div>
+      <div id = "detail-canvas"></div>
       <h2 id = "hunt-history-title">History</h2>
       <div id = "hunt-history" class = "box-content">
         No History.
+      </div>
+      <div id = "dialog-form">
+        <form>
+          <br/>
+          <input class = "clue-input-fields" id = "clue-title-field" name = "clue-title-field" type = "text" placeholder="title..or heading of your clue..."/>
+          <span>0 characters</span><br/>
+          <textarea id = "clue-body-field" name = "clue-body-field" placeholder="compose your clue here..." cols = "30" rows = "8" oninput="textAreaCharacterCount()"></textarea>
+        </form>
       </div>
     </div>
     <div id = "side-section">

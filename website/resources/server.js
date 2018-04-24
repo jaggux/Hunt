@@ -19,9 +19,10 @@ app.use(session({
   secret: "the_legend_begins",
   maxAge: 1000 * 60 * 30
 }));
-
+//app.use("/",express.static("./jquery-ui-1.12.1"));
 app.use("/",express.static("."));
 app.use("/",express.static("./fonts"));
+
 //connect to mongo
 var url = "mongodb://ksach:ilmfvm26@ds247759.mlab.com:47759/development_db";
 mongoClient.connect(url,function(err,client){
