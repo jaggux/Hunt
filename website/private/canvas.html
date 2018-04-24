@@ -18,7 +18,7 @@
       var centerX;
       var centerY;
       var stage;
-      var TEXT_THRESHHOLD = 21;
+      var TEXT_THRESHHOLD = 55;
       var LINE_THRESHHOLD = 8;
 
       $(document).ready(function(){
@@ -135,16 +135,16 @@
               var xpos = pos.x;
               var ypos = pos.y;
 
-              if(xpos < -469){
-                xpos = -469;
-              }else if(xpos > 467){
-                xpos = 467;
+              if(xpos < -508){
+                xpos = -508;
+              }else if(xpos > 308){
+                xpos = 308;
               }
 
-              if(ypos < -232){
-                ypos = -232;
-              }else if(ypos > 232){
-                ypos = 232;
+              if(ypos < -208){
+                ypos = -208;
+              }else if(ypos > 187){
+                ypos = 187;
               }
 
               return {
@@ -157,7 +157,7 @@
         var header_rect = new Konva.Rect({
           x:centerX,
           y:centerY - 60,
-          width:110,
+          width:200,
           height:25,
           fill:'#365382'
         });
@@ -169,7 +169,7 @@
           fontStyle:"bold"
         });
         var clue_body_container = new Konva.Line({
-          points:[centerX+1,centerY - 35,centerX+1,centerY + 65,centerX+109,centerY + 65,centerX+109,centerY-35],
+          points:[centerX+1,centerY - 35,centerX+1,centerY + 80,centerX+199,centerY + 80,centerX+199,centerY-35],
           stroke:'black',
           strokeWidth: 1
         });
