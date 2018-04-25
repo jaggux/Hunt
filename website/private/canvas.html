@@ -192,31 +192,28 @@
         group.add(header_rect);
         group.add(clue_title);
         group.add(body_text);
-        contextMenu({
-            items:{
-              'Edit':function(){
-                alert('edit clicked');
-              },
-              'View':function(){
-                alert('view clicked');
-              },
-              'Delete':function(){
-                group.destroy();
-              },
-            },
-            fontSize:15,
-            position:{
-              xpos:centerX,
-              ypos:centerY
-            },
-            padding:1,
-            group:group
-          });
         group.on('dblclick',function(){
-          var collection = this.children;
-          for(var i = 4;i<10;i++){
-            collection[i].show();
-          }
+          this.draggable(false);
+          contextMenu({
+              items:{
+                'Edit':function(){
+                  alert('edit clicked');
+                },
+                'View':function(){
+                  alert('view clicked');
+                },
+                'Delete':function(){
+                  group.destroy();
+                },
+              },
+              fontSize:15,
+              position:{
+                xpos:this.getX(),
+                ypos:this.getY()
+              },
+              padding:1,
+              group:this
+            });
         });
         layer.add(group);
         stage.add(layer);
@@ -242,54 +239,64 @@
       }
 
       function contextMenu(options){
-        var group = options.group;
-        var items = options.items;
-        var size = 0;
-        var max  = 0;
-        for(item in items){
-          if(item.length > max){
-            max = item.length;
+        if(options){
+          var group = new Konva.Group();
+          var clueCardGroup = options.group;
+
+          var items = options.items;
+          var size = 0;
+          var max  = 0;
+          for(item in items){
+            if(item.length > max){
+              max = item.length;
+            }
           }
+          var index = 0;
+          for(item in items){
+            var rect_cont = new Konva.Rect({
+              x:options.position.xpos + centerX,
+              y:options.position.ypos + (index*(options.fontSize+5)) + centerY - 35,
+              width:options.fontSize*max,
+              height:options.fontSize+5,
+              fill:"white",
+              stroke:"#494949",
+              strokeWidth:1
+            });
+
+
+            var text = new Konva.Text({
+              x:options.position.xpos + centerX,
+              y:options.position.ypos + (index*(options.fontSize+5)) - 35 + centerY,
+              fontSize:options.fontSize,
+              fontStyle:'bold',
+              fill:"black",
+              text:item,
+              padding:options.padding
+            });
+
+            rect_cont.on("mouseover",function(){
+              this.fill('#c6b08b');
+              layer.draw();
+            });
+            rect_cont.on("mouseleave",function(){
+              this.fill("white");
+              layer.draw();
+            });
+            rect_cont.on('click',items[item]);
+            rect_cont.on('click',function(){
+              clueCardGroup.draggable(true);
+              destroy();
+            });
+            group.add(rect_cont);
+            group.add(text);
+            index++;
+          }
+          layer.add(group);
+          stage.add(layer);
         }
-        var index = 0;
-        for(item in items){
-          var rect_cont = new Konva.Rect({
-            x:options.position.xpos,
-            y:options.position.ypos + (index*(options.fontSize+5)) - 35,
-            width:options.fontSize*max,
-            height:options.fontSize+5,
-            fill:"white",
-            stroke:"#494949",
-            strokeWidth:1
-          });
-          rect_cont.hide();
-
-          var text = new Konva.Text({
-            x:options.position.xpos,
-            y:options.position.ypos + (index*(options.fontSize+5)) - 35,
-            fontSize:options.fontSize,
-            fontStyle:'bold',
-            fill:"black",
-            text:item,
-            padding:options.padding
-          });
-          text.hide();
-          rect_cont.on("mouseover",function(){
-            this.fill('#c6b08b');
-            layer.draw();
-          });
-          rect_cont.on("mouseleave",function(){
-            this.fill("white");
-            layer.draw();
-          });
-
-          rect_cont.on('click',items[item]);
-
-          group.add(rect_cont);
-          group.add(text);
-          index++;
+        function destroy(){
+          group.destroy();
         }
-        layer.add(group);
       }
 
     </script>
