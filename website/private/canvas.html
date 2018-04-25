@@ -18,12 +18,12 @@
       var centerX;
       var centerY;
       var stage;
-      var TEXT_THRESHHOLD = 55;
+      var TEXT_THRESHHOLD = 50;
       var LINE_THRESHHOLD = 8;
 
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
-
+        var containerFunc = "cancel('context-menu')";
         $('#dialog-form').dialog({
           autoOpen:false,
           position:{
@@ -40,6 +40,7 @@
               var keywords = $('#clue-keywords-field').val();
               if(title != '' && body != '' && keywords != ''){
                 var clue = new Clue(title,body,clues.length+1);
+                clue.keywords = keywords;
                 clues.push(clue);
                 addClue(clue);
                 $(this).dialog("close");
@@ -50,11 +51,10 @@
             }
           }
         });
-
-        $('#context-menu').menu();
         $('#control-buttons-container button').click(function(){
           $('#dialog-form').dialog("open");
         });
+
         /*var cy = cytoscape({
           container: $('#canvas'),
           elements:[
@@ -95,6 +95,7 @@
         });
         centerX = stage.getWidth()/2;
         centerY = stage.getHeight()/2;
+
 
       });
 
@@ -185,12 +186,37 @@
           fontStyle:"bold",
           fontSize:8
         });
+
+
         group.add(clue_body_container);
         group.add(header_rect);
         group.add(clue_title);
         group.add(body_text);
+        contextMenu({
+            items:{
+              'Edit':function(){
+                alert('edit clicked');
+              },
+              'View':function(){
+                alert('view clicked');
+              },
+              'Delete':function(){
+                group.destroy();
+              },
+            },
+            fontSize:15,
+            position:{
+              xpos:centerX,
+              ypos:centerY
+            },
+            padding:1,
+            group:group
+          });
         group.on('dblclick',function(){
-
+          var collection = this.children;
+          for(var i = 4;i<10;i++){
+            collection[i].show();
+          }
         });
         layer.add(group);
         stage.add(layer);
@@ -214,6 +240,58 @@
         }
         $('#clue-keyword-count').text(count + " word(s)");
       }
+
+      function contextMenu(options){
+        var group = options.group;
+        var items = options.items;
+        var size = 0;
+        var max  = 0;
+        for(item in items){
+          if(item.length > max){
+            max = item.length;
+          }
+        }
+        var index = 0;
+        for(item in items){
+          var rect_cont = new Konva.Rect({
+            x:options.position.xpos,
+            y:options.position.ypos + (index*(options.fontSize+5)) - 35,
+            width:options.fontSize*max,
+            height:options.fontSize+5,
+            fill:"white",
+            stroke:"#494949",
+            strokeWidth:1
+          });
+          rect_cont.hide();
+
+          var text = new Konva.Text({
+            x:options.position.xpos,
+            y:options.position.ypos + (index*(options.fontSize+5)) - 35,
+            fontSize:options.fontSize,
+            fontStyle:'bold',
+            fill:"black",
+            text:item,
+            padding:options.padding
+          });
+          text.hide();
+          rect_cont.on("mouseover",function(){
+            this.fill('#c6b08b');
+            layer.draw();
+          });
+          rect_cont.on("mouseleave",function(){
+            this.fill("white");
+            layer.draw();
+          });
+
+          rect_cont.on('click',items[item]);
+
+          group.add(rect_cont);
+          group.add(text);
+          index++;
+        }
+        layer.add(group);
+      }
+
     </script>
     <style>
       .horizontal-container{
@@ -287,6 +365,30 @@
         font-size: 10px;
       }
 
+      #save-button{
+        background-color: #eaab3f;
+      }
+      #context-menu{
+        list-style-type: none;
+        text-align: left;
+        position: fixed;
+        z-index:1;
+        border-radius:5px;
+        background-color: #f4f6f7;
+        margin:0;
+        margin-left:0.5%;
+        padding:0;
+        width:10vw;
+        border-style:solid;
+        border-width: thin;
+        display: none;
+      }
+
+
+      .context-list:hover{
+        background-color: #edf2c4;
+      }
+
 
     </style>
   </head>
@@ -294,7 +396,7 @@
     <div id = "side-bar-menu" class = "horizontal-container"></div>
     <div id = "page-content-container" class = "horizontal-container">
       <h1 id = "title">Welcome to the hunt canvas</h1>
-      <button class = "view-control-button">Detail-View</button>
+      <button class = "view-control-button" id = "save-button">save canvas</button>
       <button class = "view-control-button">Graph-View</button>
       <span id = "control-buttons-container">
         <button class = "glyphicon">&#x2b;<span> ADD A CLUE</span></button>
@@ -317,11 +419,7 @@
         </form>
       </div>
       <div id = "context-menu">
-        <ul>
-          <li>view</li>
-          <li>edit</li>
-          <li>delete</li>
-        </ul>
+
       </div>
     </div>
     <div id = "side-section">
