@@ -18,8 +18,10 @@
       var centerX;
       var centerY;
       var stage;
-      var TEXT_THRESHHOLD = 50;
-      var LINE_THRESHHOLD = 8;
+      var TEXT_THRESHHOLD = 38;
+      var LINE_THRESHHOLD = 7;
+      var isContextMenuOpen = false;
+
 
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
@@ -54,6 +56,8 @@
         $('#control-buttons-container button').click(function(){
           $('#dialog-form').dialog("open");
         });
+
+        
 
         /*var cy = cytoscape({
           container: $('#canvas'),
@@ -103,9 +107,8 @@
         //organize body text into lines if necessary
         var str = '';
         if(clue.body.length >= TEXT_THRESHHOLD){
-          var numOfLines = Math.ceil(clue.body.length/20);
+          var numOfLines = Math.ceil(clue.body.length/TEXT_THRESHHOLD);
           if(numOfLines > LINE_THRESHHOLD){
-            clue.body += '...';
             numOfLines = LINE_THRESHHOLD;
           }
           var startIndex = TEXT_THRESHHOLD * -1;
@@ -114,13 +117,14 @@
             startIndex = startIndex + TEXT_THRESHHOLD;
             endIndex = endIndex + TEXT_THRESHHOLD;
 
-            if(endIndex >= clue.body.length){
-              endIndex = clue.body.length - 1;
+
+            if(endIndex > clue.body.length - 1){
+              endIndex = clue.body.length;
             }
-            str += clue.body.substr(startIndex,endIndex);
-            if(i != numOfLines - 1){
-              str += '\n';
+            if(startIndex > clue.body.length - 1){
+              startIndex = clue.body.length;
             }
+            str += clue.body.slice(startIndex,endIndex) + '\n';
           }
         }else{
           str = clue.body;
@@ -184,7 +188,7 @@
           text:str,
           fill:'black',
           fontStyle:"bold",
-          fontSize:8
+          fontSize:10
         });
 
 
@@ -194,13 +198,25 @@
         group.add(body_text);
         group.on('dblclick',function(){
           this.draggable(false);
+          showContextMenu(this.getX(),this.getY(),clue,this);
+        });
+       layer.add(group);
+       stage.add(layer);
+      }
+
+      function showContextMenu(x,y,clue,group){
+        if(isContextMenuOpen == false){
           contextMenu({
               items:{
                 'Edit':function(){
                   alert('edit clicked');
                 },
                 'View':function(){
-                  alert('view clicked');
+                  createViewDialog({
+                    title:clue.title,
+                    body:clue.body,
+                    keywords:clue.keywords
+                  });
                 },
                 'Delete':function(){
                   group.destroy();
@@ -208,15 +224,14 @@
               },
               fontSize:15,
               position:{
-                xpos:this.getX(),
-                ypos:this.getY()
+                xpos:x,
+                ypos:y
               },
               padding:1,
-              group:this
+              group:group
             });
-        });
-        layer.add(group);
-        stage.add(layer);
+            isContextMenuOpen = true;
+        }
       }
 
       function Clue(title,body,number){
@@ -285,6 +300,7 @@
             rect_cont.on('click',items[item]);
             rect_cont.on('click',function(){
               clueCardGroup.draggable(true);
+              isContextMenuOpen = false;
               destroy();
             });
             group.add(rect_cont);
@@ -297,6 +313,22 @@
         function destroy(){
           group.destroy();
         }
+      }
+
+      function createViewDialog(data){
+        $('#view-dialog').empty().html('<div style = "background-color:white; padding:1%;">'
+        +data.body+'</div><br/><div><b>Keywords:</b><br/>'+data.keywords+'</div>');
+        $('#view-dialog').dialog({
+          modal:true,
+          autoOpen:false,
+          title:data.title,
+          buttons:{
+            'ok':function(){
+              $(this).dialog("close");
+            }
+          }
+        });
+        $('#view-dialog').dialog("open");
       }
 
     </script>
@@ -425,9 +457,7 @@
           <span id = "clue-keyword-count">0 word(s)</span>
         </form>
       </div>
-      <div id = "context-menu">
-
-      </div>
+      <div id = "view-dialog"></div>
     </div>
     <div id = "side-section">
       <span id = "side-section-title">Active Hunt</span>
