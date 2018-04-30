@@ -21,11 +21,11 @@
       var TEXT_THRESHHOLD = 38;
       var LINE_THRESHHOLD = 7;
       var isContextMenuOpen = false;
+      var CLUE_THRESHHOLD = 20;
 
 
       $(document).ready(function(){
         $('#side-bar-menu').load("./sidebar.html");
-        var containerFunc = "cancel('context-menu')";
         $('#dialog-form').dialog({
           autoOpen:false,
           position:{
@@ -53,11 +53,53 @@
             }
           }
         });
+
+        $('#load-hunt-menu-container').dialog({
+          modal:true,
+          autoOpen:false,
+          title:"Hunt-Menu",
+          buttons:{
+            "ok":function(){
+              $(this).dialog("close");
+            }
+          }
+        });
+
         $('#control-buttons-container button').click(function(){
           $('#dialog-form').dialog("open");
         });
 
-        
+        $('#view-hunt-menu-btn').click(function(){
+            $.ajax({
+              method:"GET",
+              url:'/load-hunt',
+              success:function(data){
+                populateLoadHuntMenu(JSON.parse(data)[0],'load-hunt-menu-container');
+                $('#load-hunt-menu-container').dialog("open");
+              }
+            });
+        });
+        $('#save-button').click(function(){
+
+          if($(this).text() == 'save canvas'){
+            $.ajax({
+              method:'POST',
+              url:'/save-hunt',
+              data:{
+                clues:JSON.stringify(clues)
+              },
+              success:function(status){
+                alert("canvas saved with status: " + status);
+              },
+              error:function(error){
+                console.log(error);
+                alert("canvas not saved, an error occured");
+              }
+            });
+          }
+        });
+
+
 
         /*var cy = cytoscape({
           container: $('#canvas'),
@@ -104,6 +146,9 @@
       });
 
       function addClue(clue){
+        if(clues.length >= CLUE_THRESHHOLD){
+          return;
+        }
         //organize body text into lines if necessary
         var str = '';
         if(clue.body.length >= TEXT_THRESHHOLD){
@@ -136,6 +181,7 @@
 
         var group = new Konva.Group({
             draggable: true,
+            number:clue.number,
             dragBoundFunc: function(pos){
               var xpos = pos.x;
               var ypos = pos.y;
@@ -199,6 +245,11 @@
         group.on('dblclick',function(){
           this.draggable(false);
           showContextMenu(this.getX(),this.getY(),clue,this);
+        });
+        group.on('dragend',function(){
+          var index = this.attrs.number;
+          clues[index-1].xpos = this.getX() + centerX;
+          clues[index-1].ypos = this.getY() + centerY;
         });
        layer.add(group);
        stage.add(layer);
@@ -331,6 +382,24 @@
         $('#view-dialog').dialog("open");
       }
 
+      function populateLoadHuntMenu(array,container){
+        var id = '#' + container;
+        $(id).empty();
+        if(array.length == 0){
+          $(id).text('No Hunts Available');
+        }else{
+          $(id).append('<ul>');
+          for(var i=0;i<array.length;i++){
+            $(id).append(`<li style = "width:100%; border-style:solid;border-width:thin">
+                          <span>${array[0].title}</span></li>`);
+          }
+          $(id).append('</ul>');
+          $('ul').css('list-style-type','none');
+        }
+      }
+
+
+
     </script>
     <style>
       .horizontal-container{
@@ -382,8 +451,9 @@
       #side-section{
         border-style: dashed;
         width: 15vw;
-        height:48vh;
+        height:38vh;
         margin-top: 1%;
+        padding-left:1%;
       }
       #side-section-title{
         font-weight: bold;
@@ -423,7 +493,6 @@
         display: none;
       }
 
-
       .context-list:hover{
         background-color: #edf2c4;
       }
@@ -436,16 +505,14 @@
     <div id = "page-content-container" class = "horizontal-container">
       <h1 id = "title">Welcome to the hunt canvas</h1>
       <button class = "view-control-button" id = "save-button">save canvas</button>
-      <button class = "view-control-button">Graph-View</button>
+      <button class = "view-control-button" id = 'view-graph-btn'>Graph-View</button>
+      <button class = "view-control-button" id = 'view-hunt-menu-btn'>Load Hunt</button>
       <span id = "control-buttons-container">
         <button class = "glyphicon">&#x2b;<span> ADD A CLUE</span></button>
       </span>
       <br/>
       <div id = "detail-canvas"></div>
-      <h2 id = "hunt-history-title">History</h2>
-      <div id = "hunt-history" class = "box-content">
-        No History.
-      </div>
+
       <div id = "dialog-form">
         <form>
           <br/>
@@ -463,6 +530,10 @@
       <span id = "side-section-title">Active Hunt</span>
       <hr/>
       <div id = "side-section-content">no hunts are active.</div>
+    </div>
+    <div id = "load-hunt-menu-container">
+
+    </div>
     </div>
   </body>
 </html>

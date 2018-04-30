@@ -112,11 +112,23 @@ app.post('/log-in',function(req,res,next){
 });*/
 
 
+app.get('/load-hunt',function(req,res,next){
+  if(req.session.user){
+    var key = req.session.user.username;
+    var email = req.session.user.email;
 
+    users.find({username:key,email:email}).toArray().then(function(array){
+      res.send(JSON.stringify(array[0].hunts));
+    });
+  }else{
+    req.flash('error','! your session has expired');
+    res.redirect('/log-in');
+  }
+});
 app.get('/dashboard',function(req,res,next){
   if(req.session.user){
     var username = req.session.user.username;
-    var totalHunts = req.session.user.hunts;
+    var totalHunts = req.session.user.hunts.length;
     var score = req.session.user.score;
     res.send(serveDynamicPage("../private/dashboard.html",{
       "<h1 id = 'username-container'>[.]*</h1>":"<h1 id = 'username-container'>welcome to the hunt, "+ username +"</h1>",
@@ -143,6 +155,23 @@ app.get("/canvas",function(req,res,next){
     res.send(fs.readFileSync("../private/canvas.html").toString());
   }else{
     req.flash('error','! your session has expired, please login again');
+    res.redirect('/log-in');
+  }
+});
+
+app.post('/save-hunt',function(req,res,next){
+  if(req.session.user){
+    var key = req.session.user.username;
+    var email = req.session.user.email;
+    users.update({username:key,email:email},{$addToSet:{hunts:JSON.parse(req.body.clues)}},function(err){
+      if(err){
+        throw err;
+      }else{
+        res.send('200');
+      }
+    });
+  }else{
+    req.flash('error','! your session has expired');
     res.redirect('/log-in');
   }
 });
