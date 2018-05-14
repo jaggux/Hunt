@@ -8,6 +8,140 @@
     <script src="https://cdn.rawgit.com/konvajs/konva/2.0.3/konva.min.js"></script>
     <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
    crossorigin="anonymous"></script>
+   <style>
+     .horizontal-container{
+       display: inline-block;
+     }
+     #title{
+       background-color: #724403;
+       color: white;
+       padding: 1%;
+       width: 80vw;
+       font-family: baby-love;
+       border-style: solid;
+       border-color: black;
+       border-width: thin;
+     }
+     #page-content-container{
+       position: absolute;
+       margin-left: 2vw;
+     }
+     #detail-canvas{
+       border-style: solid;
+       width:80vw;
+       height:80vh;
+       margin-top:2%;
+     }
+     .box-content{
+       border: dashed;
+       width: 80vw;
+       color: #bec4ce;
+     }
+     .view-control-button{
+       color:white;
+       background-color: #040930;
+       border-radius:10px;
+       font-family: digital-letters;
+     }
+
+     #control-buttons-container button{
+       position: relative;
+       float:right;
+       border:none;
+       color: white;
+       background-color: green;
+       font-size: 15px;
+       margin-bottom: 1%;
+       border-radius: 5px;
+       font-family: digital-letters;
+     }
+     #side-section{
+       border-style: dashed;
+       width: 15vw;
+       height:38vh;
+       margin-top: 1%;
+       padding-left:1%;
+     }
+     #side-section-title{
+       font-weight: bold;
+       font-family: digital-letters;
+       font-size: 25px;
+       color:#193666;
+     }
+
+     #dialog-form .clue-input-fields{
+       position:relative;
+       width:100%;
+     }
+     #dialog-form textarea{
+       resize: none;
+       text-align: left;
+     }
+     #dialog-form span{
+       font-size: 10px;
+     }
+
+     #save-button{
+       background-color: #eaab3f;
+     }
+     #context-menu{
+       list-style-type: none;
+       text-align: left;
+       position: fixed;
+       z-index:1;
+       border-radius:5px;
+       background-color: #f4f6f7;
+       margin:0;
+       margin-left:0.5%;
+       padding:0;
+       width:10vw;
+       border-style:solid;
+       border-width: thin;
+       display: none;
+     }
+     #load-hunt-menu-container{
+       position: absolute;
+       top:30vh;
+       left:70vh;
+       z-index:3;
+       width:30vw;
+       height:50vh;
+       background-color: #d3dbe8;
+       border-radius:6px;
+       display: none;
+     }
+     #hunt-menu-header{
+       height:10%;
+       background-color: #91a6c9;
+       border-radius: 5px;
+       color:#787c82;
+     }
+     #hunt-menu-content{
+       overflow-y: scroll;
+       height:80%;
+       background-color: white;
+     }
+     #hunt-menu-content ul{
+       list-style-type: none;
+       padding:0;
+     }
+     #overlay{
+       position:absolute;
+       z-index:2;
+       top:0;
+       width:100vw;
+       height:100vh;
+       background-color: blue;
+       opacity: 0.2;
+       display: none;
+     }
+
+     .context-list:hover{
+       background-color: #edf2c4;
+     }
+
+
+   </style>
 
     <script>
       var clues = new Array();
@@ -54,16 +188,6 @@
           }
         });
 
-        $('#load-hunt-menu-container').dialog({
-          modal:true,
-          autoOpen:false,
-          title:"Hunt-Menu",
-          buttons:{
-            "ok":function(){
-              $(this).dialog("close");
-            }
-          }
-        });
 
         $('#control-buttons-container button').click(function(){
           $('#dialog-form').dialog("open");
@@ -74,19 +198,20 @@
               method:"GET",
               url:'/load-hunt',
               success:function(data){
-                populateLoadHuntMenu(JSON.parse(data)[0],'load-hunt-menu-container');
-                $('#load-hunt-menu-container').dialog("open");
+                showScrollableMenu('load-hunt-menu-container',JSON.parse(data));
               }
             });
         });
         $('#save-button').click(function(){
-
+          var date = new Date();
+          var dateStr = date.getDate() + '-' + date.getMonth() + '-' + date.getFullYear();
           if($(this).text() == 'save canvas'){
             $.ajax({
               method:'POST',
               url:'/save-hunt',
               data:{
-                clues:JSON.stringify(clues)
+                clues:JSON.stringify(clues),
+                date:dateStr
               },
               success:function(status){
                 alert("canvas saved with status: " + status);
@@ -145,6 +270,31 @@
 
       });
 
+      function splitStringToLines(numOfLines,line_size,str){
+        var count = 0;
+        var line_count = 0;
+        var i = 0;
+        var result = "";
+        var array = str.split(" ");
+
+        while(i < array.length){
+
+          if(count >= line_size - 1){
+            result += '\n';
+            line_count++;
+            count = 0;
+          }else if(line_count >= numOfLines){
+            return result + "...";
+          }else{
+            result+= " "+array[i];
+            var size = array[i].length;
+            count += size + 1;
+            i++;
+          }
+        }
+        return result;
+      }
+
       function addClue(clue){
         if(clues.length >= CLUE_THRESHHOLD){
           return;
@@ -156,7 +306,9 @@
           if(numOfLines > LINE_THRESHHOLD){
             numOfLines = LINE_THRESHHOLD;
           }
-          var startIndex = TEXT_THRESHHOLD * -1;
+          str = splitStringToLines(numOfLines,TEXT_THRESHHOLD,clue.body);
+          console.log(str);
+          /*var startIndex = TEXT_THRESHHOLD * -1;
           var endIndex = 0;
           for(var i=0;i<numOfLines;i++){
             startIndex = startIndex + TEXT_THRESHHOLD;
@@ -170,7 +322,7 @@
               startIndex = clue.body.length;
             }
             str += clue.body.slice(startIndex,endIndex) + '\n';
-          }
+          }*/
         }else{
           str = clue.body;
         }
@@ -381,124 +533,29 @@
         });
         $('#view-dialog').dialog("open");
       }
-
-      function populateLoadHuntMenu(array,container){
+      function showScrollableMenu(container,array){
         var id = '#' + container;
+        populateLoadHuntMenu('#hunt-menu-content ul',array);
+        $('#overlay').show();
+        $(id).show();
+        $('#overlay').off().click(function(){
+          $(id).hide();
+          $(this).hide();
+        });
+      }
+      function populateLoadHuntMenu(id,array){
         $(id).empty();
         if(array.length == 0){
-          $(id).text('No Hunts Available');
+          $(id).text('No Hunts Available.');
         }else{
-          $(id).append('<ul>');
-          for(var i=0;i<array.length;i++){
-            $(id).append(`<li style = "width:100%; border-style:solid;border-width:thin">
-                          <span>${array[0].title}</span></li>`);
+          for(var i=0;i<array[0].clues.length;i++){
+            $(id).append(`<li style = "border-bottom-style:solid;border-width:thin;padding:1%;">${array[0].date}</li>`);
           }
-          $(id).append('</ul>');
-          $('ul').css('list-style-type','none');
         }
       }
 
-
-
     </script>
-    <style>
-      .horizontal-container{
-        display: inline-block;
-      }
-      #title{
-        background-color: #724403;
-        color: white;
-        padding: 1%;
-        width: 80vw;
-        font-family: baby-love;
-        border-style: solid;
-        border-color: black;
-        border-width: thin;
-      }
-      #page-content-container{
-        position: absolute;
-        margin-left: 2vw;
-      }
-      #detail-canvas{
-        border-style: solid;
-        width:80vw;
-        height:80vh;
-        margin-top:2%;
-      }
-      .box-content{
-        border: dashed;
-        width: 80vw;
-        color: #bec4ce;
-      }
-      .view-control-button{
-        color:white;
-        background-color: #040930;
-        border-radius:10px;
-        font-family: digital-letters;
-      }
 
-      #control-buttons-container button{
-        position: relative;
-        float:right;
-        border:none;
-        color: white;
-        background-color: green;
-        font-size: 15px;
-        margin-bottom: 1%;
-        border-radius: 5px;
-        font-family: digital-letters;
-      }
-      #side-section{
-        border-style: dashed;
-        width: 15vw;
-        height:38vh;
-        margin-top: 1%;
-        padding-left:1%;
-      }
-      #side-section-title{
-        font-weight: bold;
-        font-family: digital-letters;
-        font-size: 25px;
-        color:#193666;
-      }
-
-      #dialog-form .clue-input-fields{
-        position:relative;
-        width:100%;
-      }
-      #dialog-form textarea{
-        resize: none;
-        text-align: left;
-      }
-      #dialog-form span{
-        font-size: 10px;
-      }
-
-      #save-button{
-        background-color: #eaab3f;
-      }
-      #context-menu{
-        list-style-type: none;
-        text-align: left;
-        position: fixed;
-        z-index:1;
-        border-radius:5px;
-        background-color: #f4f6f7;
-        margin:0;
-        margin-left:0.5%;
-        padding:0;
-        width:10vw;
-        border-style:solid;
-        border-width: thin;
-        display: none;
-      }
-
-      .context-list:hover{
-        background-color: #edf2c4;
-      }
-
-
-    </style>
   </head>
   <body>
     <div id = "side-bar-menu" class = "horizontal-container"></div>
@@ -532,7 +589,12 @@
       <div id = "side-section-content">no hunts are active.</div>
     </div>
     <div id = "load-hunt-menu-container">
-
+      <div id = "hunt-menu-header">Title</div>
+      <div id = "hunt-menu-content">
+        <ul></ul>
+      </div>
+    </div>
+    <div id = "overlay">
     </div>
     </div>
   </body>

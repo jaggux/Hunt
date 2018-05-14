@@ -163,7 +163,10 @@ app.post('/save-hunt',function(req,res,next){
   if(req.session.user){
     var key = req.session.user.username;
     var email = req.session.user.email;
-    users.update({username:key,email:email},{$addToSet:{hunts:JSON.parse(req.body.clues)}},function(err){
+    var obj = new Object();
+    obj.clues = JSON.parse(req.body.clues);
+    obj.date = req.body.date;
+    users.update({username:key,email:email},{$addToSet:{hunts:obj}},function(err){
       if(err){
         throw err;
       }else{
