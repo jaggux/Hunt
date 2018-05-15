@@ -69,7 +69,6 @@ app.get('/',function(req,res,next){
 
 app.post('/log-in',function(req,res,next){
   if(users){
-    console.log(req.body.email);
     users.find({email:req.body.email}).toArray(function(err,array){
       if(err) throw err;
       if(array[0]){
@@ -105,7 +104,7 @@ app.post('/log-in',function(req,res,next){
     if(error) throw error;
     if(users){
       users.insert({username:username,password:hash,email:"karansachdev886@gmail.com",admin:true});
-      res.end("succesfully created admin");
+      res.end(hash);
     }
   });
 
@@ -173,6 +172,21 @@ app.post('/save-hunt',function(req,res,next){
         res.send('200');
       }
     });
+  }else{
+    req.flash('error','! your session has expired');
+    res.redirect('/log-in');
+  }
+});
+
+app.delete('/delete-hunt/:id',function(req,res,next){
+  var user = req.session.user;
+  if(user){
+    var hunts = user.hunts.splice(req.params.id,1);
+    users.update({username:user.username},{$set:{hunts:hunts}},function(err){
+      if(err) res.send(300);
+      res.send(200);
+    });
+
   }else{
     req.flash('error','! your session has expired');
     res.redirect('/log-in');
