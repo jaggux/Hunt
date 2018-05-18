@@ -178,7 +178,7 @@
                 var clue = new Clue(title,body,clues.length+1);
                 clue.keywords = keywords;
                 clues.push(clue);
-                addClue(clue);
+                addClue(clue,centerX,centerY);
                 $(this).dialog("close");
               }
             },
@@ -295,7 +295,7 @@
         return result;
       }
 
-      function addClue(clue){
+      function addClue(clue,x,y){
         if(clues.length >= CLUE_THRESHHOLD){
           return;
         }
@@ -342,22 +342,22 @@
             }
         });
         var header_rect = new Konva.Rect({
-          x:centerX,
-          y:centerY - 60,
+          x:x,
+          y:y - 60,
           width:200,
           height:25,
           fill:'#365382'
         });
         var clue_title = new Konva.Text({
-          x:centerX + 3,
-          y:centerY - 55,
+          x:x + 3,
+          y:y - 55,
           text:clue.number + ". " + clue.title,
           fill:"white",
           fontStyle:"bold"
         });
         var clue_body_container = new Konva.Rect({
-          x:centerX + 0.75,
-          y:centerY - 38,
+          x:x + 0.75,
+          y:y - 38,
           width:198.5,
           height:110,
           fill:"white",
@@ -365,8 +365,8 @@
           strokeWidth: 1
         });
         var body_text = new Konva.Text({
-          x:centerX + 3,
-          y:centerY - 28,
+          x:x + 3,
+          y:y - 28,
           text:str,
           fill:'black',
           fontStyle:"bold",
@@ -384,8 +384,8 @@
         });
         group.on('dragend',function(){
           var index = this.attrs.number;
-          clues[index-1].xpos = this.getX() + centerX;
-          clues[index-1].ypos = this.getY() + centerY;
+          clues[index-1].xpos = this.getX() + x;
+          clues[index-1].ypos = this.getY() + y;
         });
        layer.add(group);
        stage.add(layer);
@@ -535,7 +535,7 @@
           for(var i=0;i<array[0].clues.length;i++){
             $(id).append(`<li style = "border-bottom-style:solid;border-width:thin;padding:2%;">
             <span>${array[0].date}</span><span style = "margin-left:10%">${array[i].clues.length} clue(s)</span>
-            <button style = "background-color:#4b586d;color:white;margin-left:10%;font-size:10px;border-radius:5px;">
+            <button  onclick = "onloadHunt(${i}) "style = "background-color:#4b586d;color:white;margin-left:10%;font-size:10px;border-radius:5px;">
             load</button><button onclick = "onDeleteHunt(${i})" style = "float:right;border:none">&#215;</button></li>`);
           }
         }
@@ -545,6 +545,7 @@
         var confirmDelete = confirm("Are you sure you want to delete this hunt?");
         if(confirmDelete){
           $('#load-hunt-menu-container').hide();
+          $('#overlay').hide();
           $.ajax({
             method:"DELETE",
             url:"/delete-hunt/"+id,
@@ -556,6 +557,23 @@
           });
         }
       }
+
+      function onloadHunt(id){
+        $('#load-hunt-menu-container').hide();
+        $('#overlay').hide();
+        stage.clear();
+        $.ajax({
+          method:"GET",
+          url:"load-hunt/"+id,
+          success:function(data){
+            for(var i=0;i<data.clues.length;i++){
+              
+            }
+          }
+        });
+      }
+
+
 
     </script>
 

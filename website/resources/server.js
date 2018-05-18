@@ -124,6 +124,17 @@ app.get('/load-hunt',function(req,res,next){
     res.redirect('/log-in');
   }
 });
+
+app.get('/load-hunt/:id',function(req,res,next){
+  var user = req.session.user;
+  var id = req.params.id;
+  if(user){
+    res.send(user.hunts[id]);
+  }else{
+    req.flash('error','! your session has expired');
+    res.redirect('/log-in');
+  }
+});
 app.get('/dashboard',function(req,res,next){
   if(req.session.user){
     var username = req.session.user.username;
@@ -165,6 +176,7 @@ app.post('/save-hunt',function(req,res,next){
     var obj = new Object();
     obj.clues = JSON.parse(req.body.clues);
     obj.date = req.body.date;
+    obj.hid = req.session.user.hunts.length;
     users.update({username:key,email:email},{$addToSet:{hunts:obj}},function(err){
       if(err){
         throw err;
