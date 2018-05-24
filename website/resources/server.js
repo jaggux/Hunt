@@ -195,8 +195,8 @@ app.delete('/delete-hunt/:id',function(req,res,next){
   if(user){
     var hunts = user.hunts.splice(req.params.id,1);
     users.update({username:user.username},{$set:{hunts:hunts}},function(err){
-      if(err) res.send(300);
-      res.send(200);
+      if(err) res.redirect('/log-in');
+      res.send("200");
     });
 
   }else{

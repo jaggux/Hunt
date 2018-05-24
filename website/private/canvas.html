@@ -550,7 +550,7 @@
             method:"DELETE",
             url:"/delete-hunt/"+id,
             success:function(status){
-              if(status == 200){
+              if(status == "200"){
                 alert("delete success!");
               }
             }
@@ -562,17 +562,19 @@
         $('#load-hunt-menu-container').hide();
         $('#overlay').hide();
         stage.clear();
+        clues = new Array();
         $.ajax({
           method:"GET",
           url:"load-hunt/"+id,
           success:function(data){
+            console.log(data);
             for(var i=0;i<data.clues.length;i++){
-              
+              addClue(new Clue(data.clues[i].title,data.clues[i].body,data.clues[i].number),
+              centerX + data.clues[i].xpos,centerY + data.clues[i].ypos);
             }
           }
         });
       }
-
 
 
     </script>
