@@ -1,7 +1,7 @@
 # Hunt
 
 Check the Demo file for screenshots!!
-Note:This project is a work in progress, development of the mobile component has not begun yet
+**Note:This project is a work in progress, development of the mobile component has not begun yet**
 
 
 Hunt is inspired by traditional treasure hunt games where the game master makes the clues and hides them in several
@@ -27,6 +27,9 @@ How to Test?
    and execute server.js
 3. while the server program is running go to this url: localhost:3000
 4. Have Fun.
+
+**Note: to check out the hunt work space click on the "hunt" button on the side bar once you have logged into the dashboard
+using credentials given below**
 
 
 **You may login as admin for now using these credentials:**
