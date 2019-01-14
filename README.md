@@ -13,18 +13,18 @@ an interactive drag and drop workspace
 This project has 2 components:
 Website and Mobile application
 
-As explained above the website will be used to design hunts as its primary function, while the mobile application 
+As explained above, the website will be used to design hunts as its primary function, while the mobile application 
 will allow users to participate in hunts, monitor hunt progress, and most importantly submit images to solve clues
 
-Note that images will be authenticateed as clue solution through an image recognition platform, I want to train my own
-image recognition network if possible in the near future, or other options include subscribing to google's image recognition
+Note that images will be authenticateed as clue solutions through an image recognition platform, I want to train my own
+image recognition network if possible in the near future, or other options include subscribing to google's object recognition
 API
 
 How to Test?
 
 1. Clone/Download Repo (make sure you have the latest stable version of node.js installed on your machine)
-2. cd into the project on your machine using terminal, command prompt, ..etc. Go to website >> Resources
-   and execute server.js
+2. cd into the project on your machine using terminal or command prompt. Go to website >> Resources
+   and execute server.js ( command: node server.js)
 3. while the server program is running go to this url: localhost:3000
 4. Have Fun.
 
